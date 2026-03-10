@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>Mario OOP Playground</title>
+
+<link rel="stylesheet" href="styles/main.css">
+
+</head>
+
+<body>
+
+<h2>Mario OOP Playground</h2>
+
+<div id="module-engine">
+
+  <div id="game">
+
+    <canvas id="world"></canvas>
+
+  </div>
+
+  <div id="editor">
+
+  <textarea id="javaCode">
+
+  import powerups.SuperMushroom;
+
+  class Mario extends Character implements SuperMushroom {}
+
+  </textarea>
+
+  <button id="compile">Compile Mario</button>
+
+  </div>
+</div>
+
+<script type="module" src="main.js"></script>
+
+</body>
+</html>

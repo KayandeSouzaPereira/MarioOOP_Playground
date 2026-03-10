@@ -1,0 +1,28 @@
+{
+ "idle":{
+  "row":3,
+  "frames":[1,1,1,0],
+  "speed":2000
+ },
+
+ "walk":{
+  "row":3,
+  "frames":[1,2],
+  "speed":120
+ },
+ "run":{
+  "row":3,
+  "frames":[1,2],
+  "speed":80
+ },
+ "jump":{
+  "row":2,
+  "frames":[0,1,2],
+  "speed":500
+ },
+ "fall":{
+  "row":0,
+  "frames":[0,1,2],
+  "speed":500
+ }
+}
