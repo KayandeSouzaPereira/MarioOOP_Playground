@@ -76,6 +76,9 @@ export class Animator {
 
     if (options.grayscale) {
       ctx.filter = "grayscale(100%) brightness(0.85) contrast(1.15)"
+    } else if (options.star) {
+      const hue = Math.floor((options.starPhase / 2) % 360)
+      ctx.filter = `hue-rotate(${hue}deg) saturate(2.2) brightness(1.15)`
     }
 
     if (direction === -1) {

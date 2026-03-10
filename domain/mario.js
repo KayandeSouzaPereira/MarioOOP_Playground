@@ -24,10 +24,13 @@ export class Mario extends Entity {
       left: 450,
       right: 780,
       top: 220,
-      bottom: 430
+      bottom: 433
     }
 
-    this.renderHeight = this.animationConfig.forms.small.frameHeight * this.animationConfig.forms.small.scale
+    this.renderHeight =
+      this.animationConfig.forms.small.frameHeight *
+      this.animationConfig.forms.small.scale
+
     this.y = this.bounds.bottom
     this.groundY = this.bounds.bottom
 
@@ -39,8 +42,11 @@ export class Mario extends Entity {
     this.glideGravity = null
     this.jumpStrength = -12
 
-    this.walkSpeed = 1.2
-    this.runSpeed = 2.2
+    this.baseWalkSpeed = 1.2
+    this.baseRunSpeed = 2.2
+
+    this.walkSpeed = this.baseWalkSpeed
+    this.runSpeed = this.baseRunSpeed
 
     this.onGround = true
     this.direction = 1
@@ -49,6 +55,18 @@ export class Mario extends Entity {
     this.actionTimer = 0
     this.actionInterval = 2200
     this.currentAction = "idle"
+
+    this.isTransforming = false
+    this.transformTimer = 0
+    this.transformDuration = 1000
+    this.transformInterval = 120
+    this.transformBlinkTimer = 0
+    this.transformFromForm = "small"
+    this.transformToForm = "small"
+
+    this.starActive = false
+    this.starTimer = 0
+    this.starDuration = 4000
   }
 
   applyClassModel(model) {
@@ -57,7 +75,21 @@ export class Mario extends Entity {
     const result = resolvePowerups(model.powerups)
 
     this.powerups = result.abilities || []
-    this.applyForm(result.form, result.modifiers)
+
+    if (result.form !== this.form) {
+      this.startTransformation(result.form, result.modifiers)
+    } else {
+      this.applyForm(result.form, result.modifiers)
+    }
+
+    if (result.effects?.star) {
+      this.activateStar()
+    } else {
+      this.starActive = false
+      this.starTimer = 0
+      this.walkSpeed = this.baseWalkSpeed
+      this.runSpeed = this.baseRunSpeed
+    }
 
     if (this.isObjectType()) {
       this.velocityX = 0
@@ -73,6 +105,22 @@ export class Mario extends Entity {
     return this.entityType === "Object"
   }
 
+  startTransformation(targetForm, modifiers) {
+    this.isTransforming = true
+    this.transformTimer = 0
+    this.transformBlinkTimer = 0
+    this.transformFromForm = this.form
+    this.transformToForm = targetForm
+    this.pendingModifiers = modifiers
+
+    this.velocityX = 0
+    this.velocityY = 0
+    this.onGround = true
+    this.y = this.groundY
+    this.currentAction = "idle"
+    this.animator.set("idle")
+  }
+
   applyForm(form, modifiers) {
     this.form = form
 
@@ -84,28 +132,38 @@ export class Mario extends Entity {
     this.sprite = sprite
     this.animator.setForm(sprite, formConfig)
 
-    this.defaultGravity = modifiers.gravity
-    this.gravity = modifiers.gravity
-    this.jumpStrength = modifiers.jumpStrength
-    this.glideGravity = modifiers.glideGravity
+    this.defaultGravity = modifiers.gravity ?? 0.8
+    this.gravity = this.defaultGravity
+    this.jumpStrength = modifiers.jumpStrength ?? -12
+    this.glideGravity = modifiers.glideGravity ?? null
+    this.baseWalkSpeed = modifiers.walkSpeed ?? 1.2
+    this.baseRunSpeed = modifiers.runSpeed ?? 2.2
+
+    this.walkSpeed = this.baseWalkSpeed
+    this.runSpeed = this.baseRunSpeed
 
     this.renderHeight = formConfig.frameHeight * formConfig.scale
   }
 
+  activateStar() {
+    this.starActive = true
+    this.starTimer = 0
+    this.jumpStrength = this.jumpStrength * 1.08
+    this.walkSpeed = this.baseWalkSpeed * 1.8
+    this.runSpeed = this.baseRunSpeed * 1.8
+  }
+
   randomAction() {
-    if (this.isObjectType()) {
+    if (this.isObjectType() || this.isTransforming) {
       this.currentAction = "idle"
       this.velocityX = 0
       this.animator.set("idle")
       return
     }
 
-    const pool = [
-      "idle", "idle", "idle",
-      "walk", "walk",
-      "run",
-      "jump"
-    ]
+    const pool = this.starActive
+  ? ["run", "run", "run", "walk", "jump"]
+  : ["idle", "idle", "idle", "walk", "walk", "run", "jump"]
 
     const action = pool[Math.floor(Math.random() * pool.length)]
 
@@ -118,7 +176,7 @@ export class Mario extends Entity {
   }
 
   setAction(action) {
-    if (this.isObjectType()) {
+    if (this.isObjectType() || this.isTransforming) {
       this.currentAction = "idle"
       this.velocityX = 0
       this.animator.set("idle")
@@ -150,7 +208,7 @@ export class Mario extends Entity {
   }
 
   jump() {
-    if (this.isObjectType()) return
+    if (this.isObjectType() || this.isTransforming) return
     if (!this.onGround) return
 
     this.currentAction = "jump"
@@ -184,7 +242,60 @@ export class Mario extends Entity {
     }
   }
 
+  updateTransformation(delta) {
+    this.transformTimer += delta
+    this.transformBlinkTimer += delta
+
+    if (this.transformBlinkTimer >= this.transformInterval) {
+      this.transformBlinkTimer = 0
+
+      const showingTarget = this.form === this.transformFromForm
+      const nextForm = showingTarget ? this.transformToForm : this.transformFromForm
+
+      const sprite = this.sprites[nextForm]
+      const config = this.animationConfig.forms[nextForm]
+
+      this.form = nextForm
+      this.sprite = sprite
+      this.animator.setForm(sprite, config)
+      this.animator.set("idle")
+      this.renderHeight = config.frameHeight * config.scale
+    }
+
+    if (this.transformTimer >= this.transformDuration) {
+      this.isTransforming = false
+      this.applyForm(this.transformToForm, this.pendingModifiers)
+      this.animator.set("idle")
+    }
+  }
+
+  updateStar(delta) {
+    if (!this.starActive) {
+      this.walkSpeed = this.baseWalkSpeed
+      this.runSpeed = this.baseRunSpeed
+      return
+    }
+
+    this.starTimer += delta
+
+    if (this.starTimer >= this.starDuration) {
+      this.starActive = false
+      this.starTimer = 0
+
+      this.walkSpeed = this.baseWalkSpeed
+      this.runSpeed = this.baseRunSpeed
+    }
+  }
+
   update(delta) {
+    this.updateStar(delta)
+
+    if (this.isTransforming) {
+      this.updateTransformation(delta)
+      this.animator.update(delta)
+      return
+    }
+
     if (this.isObjectType()) {
       this.velocityX = 0
       this.velocityY = 0
@@ -246,7 +357,11 @@ export class Mario extends Entity {
       this.x,
       this.y - this.renderHeight,
       this.direction,
-      { grayscale: this.isObjectType() }
+      {
+        grayscale: this.isObjectType(),
+        star: this.starActive,
+        starPhase: this.starTimer
+      }
     )
   }
 }
