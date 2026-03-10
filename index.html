@@ -1,43 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-
-<meta charset="UTF-8">
-
-<title>Mario OOP Playground</title>
-
-<link rel="stylesheet" href="styles/main.css">
-
+  <meta charset="UTF-8">
+  <title>Mario OOP Playground</title>
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 
 <body>
+  <div id="topbar">
+    <h2 id="title">Mario OOP Playground</h2>
 
-<h2>Mario OOP Playground</h2>
-
-<div id="module-engine">
-
-  <div id="game">
-
-    <canvas id="world"></canvas>
-
+    <button id="langToggle" class="lang-toggle">
+      PT
+    </button>
   </div>
 
-  <div id="editor">
+  <div id="module-engine">
+    <div id="game">
+      <canvas id="world"></canvas>
+    </div>
 
-  <textarea id="javaCode">
+    <div id="editor">
+      <div id="explanation-panel" class="info-card">
+        <h3 id="subTitle">Description</h3>
+        <p id="text">
+          This demo aims to visually and interactively present the concepts of <b>inheritance</b> and <b>interfaces</b> using the Mario theme, as an initiative by <b>Colab Team @SouJava</b>.
+          <br><br>
+          In this example, Mario is initially a <b>character</b>, and because of that, he inherits all the characteristics of a <b>Character</b> type.
+          This means he can walk, run, and jump, behaving as an active entity in the scene.
+          <br><br>
+          On the other hand, when the <b>object</b> characteristic is added, he no longer behaves like a character and starts assuming the properties of an <b>Object</b> type.
+          As a result, he loses his movement actions, becomes static, and is represented as a passive entity in the environment.
+          <br><br>
+          The demo also shows how <b>interfaces</b> can add new elements and capabilities without changing the main inheritance of the class.
+          This is the case with <b>Mario’s power-ups</b>, which add abilities and visual changes without modifying his main place in the class hierarchy.
+        </p>
+      </div>
 
-  import powerups.SuperMushroom;
+      <textarea id="javaCode">
+      import powerups.Cape; 
+      import powerups.SuperMushroom; 
+      import type.Character; 
+      import type.Object; 
+          
+      class Mario extends Character implements PowerUp {}
+      </textarea>
 
-  class Mario extends Character implements SuperMushroom {}
-
-  </textarea>
-
-  <button id="compile">Compile Mario</button>
-
+      <button id="compile">Compile Mario</button>
+    </div>
   </div>
-</div>
 
-<script type="module" src="main.js"></script>
-
+  <script type="module" src="main.js"></script>
 </body>
 </html>

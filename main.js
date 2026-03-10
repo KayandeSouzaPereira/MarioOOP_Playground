@@ -7,12 +7,16 @@ const world = new World("world")
 let mario
 
 async function init() {
-  const sprite = await loadSprite("./assets/sprites/mario/mario_small.png")
+  const sprites = {
+    small: await loadSprite("./assets/sprites/mario/mario_small.png"),
+    big: await loadSprite("./assets/sprites/mario/mario_big.png"),
+    cape: await loadSprite("./assets/sprites/mario/mario_power-up.png")
+  }
 
-  const animations = await fetch("./assets/sprites/mario/mario.animations.json")
+  const animationConfig = await fetch("./assets/sprites/mario/mario.animations.json")
     .then(r => r.json())
 
-  mario = new Mario(sprite, animations)
+  mario = new Mario(sprites, animationConfig)
   world.spawn(mario)
 }
 
@@ -26,3 +30,57 @@ document.getElementById("compile").onclick = () => {
 
   mario.applyClassModel(classModel)
 }
+
+const translations = {
+  pt: {
+    title: "Mario OOP Playground",
+    compile: "Compilar Mario",
+    subTitle: "Descrição",
+    text: `
+      Esta demo tem como proposta mostrar, de forma visual e interativa, os conceitos de <b>herança</b> e <b>interface</b> utilizando o tema Mario, como uma iniciativa do <b>Colab Team @SouJava</b>.
+      <br><br>
+      Neste exemplo, o Mario é inicialmente um <b>personagem</b> e, por isso, recebe como herança todas as características de um tipo <b>Character</b>.
+      Isso significa que ele pode andar, correr e pular, além de se comportar como uma entidade ativa dentro do cenário.
+      <br><br>
+      Por outro lado, ao adicionar a característica de <b>objeto</b>, ele deixa de se comportar como um personagem e passa a assumir as propriedades de um tipo <b>Object</b>.
+      Com isso, ele perde as ações de movimento, fica estático e passa a ser representado como uma entidade passiva no ambiente.
+      <br><br>
+      A demo também mostra como as <b>interfaces</b> podem adicionar novos elementos e capacidades sem alterar a herança principal da classe.
+      Esse é o caso dos <b>power-ups do Mario</b>, que acrescentam habilidades e modificações visuais sem mudar sua base principal na hierarquia.
+    `
+  },
+  en: {
+    title: "Mario OOP Playground",
+    compile: "Compile Mario",
+    subTitle: "Description",
+    text: `
+      This demo aims to visually and interactively present the concepts of <b>inheritance</b> and <b>interfaces</b> using the Mario theme, as an initiative by <b>Colab Team @SouJava</b>.
+      <br><br>
+      In this example, Mario is initially a <b>character</b>, and because of that, he inherits all the characteristics of a <b>Character</b> type.
+      This means he can walk, run, and jump, behaving as an active entity in the scene.
+      <br><br>
+      On the other hand, when the <b>object</b> characteristic is added, he no longer behaves like a character and starts assuming the properties of an <b>Object</b> type.
+      As a result, he loses his movement actions, becomes static, and is represented as a passive entity in the environment.
+      <br><br>
+      The demo also shows how <b>interfaces</b> can add new elements and capabilities without changing the main inheritance of the class.
+      This is the case with <b>Mario’s power-ups</b>, which add abilities and visual changes without modifying his main place in the class hierarchy.
+    `
+  }
+}
+
+let currentLang = "en"
+
+function applyLanguage(lang) {
+  document.getElementById("title").innerText = translations[lang].title
+  document.getElementById("compile").innerText = translations[lang].compile
+  document.getElementById("subTitle").innerText = translations[lang].subTitle
+  document.getElementById("text").innerHTML = translations[lang].text
+  document.getElementById("langToggle").innerText = lang === "pt" ? "EN" : "PT"
+}
+
+document.getElementById("langToggle").addEventListener("click", () => {
+  currentLang = currentLang === "pt" ? "en" : "pt"
+  applyLanguage(currentLang)
+})
+
+applyLanguage(currentLang)

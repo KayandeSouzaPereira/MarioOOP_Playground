@@ -14,7 +14,7 @@ export function parseJava(code) {
 
   return {
     className: classMatch ? classMatch[1] : null,
-    extends: extendsMatch ? extendsMatch[1] : null,
+    extends: extendsMatch ? extendsMatch[1] : "Object",
     powerups
   }
 }

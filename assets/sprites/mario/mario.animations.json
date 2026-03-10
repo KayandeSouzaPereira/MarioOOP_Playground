@@ -1,28 +1,97 @@
 {
- "idle":{
-  "row":3,
-  "frames":[1,1,1,0],
-  "speed":2000
- },
-
- "walk":{
-  "row":3,
-  "frames":[1,2],
-  "speed":120
- },
- "run":{
-  "row":3,
-  "frames":[1,2],
-  "speed":80
- },
- "jump":{
-  "row":2,
-  "frames":[0,1,2],
-  "speed":500
- },
- "fall":{
-  "row":0,
-  "frames":[0,1,2],
-  "speed":500
- }
+  "forms": {
+    "small": {
+      "frameWidth": 32,
+      "frameHeight": 64,
+      "scale": 0.7,
+      "animations": {
+        "idle": {
+          "row": 0,
+          "frames": [0],
+          "speed": 400
+        },
+        "walk": {
+          "row": 3,
+          "frames": [1, 2, 3],
+          "speed": 90
+        },
+        "run": {
+          "row": 3,
+          "frames": [1, 2, 3],
+          "speed": 40
+        },
+        "jump": {
+          "row": 2,
+          "frames": [0],
+          "speed": 200
+        },
+        "fall": {
+          "row": 2,
+          "frames": [0],
+          "speed": 200
+        }
+      }
+    },
+    "big": {
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "scale": 1.4,
+      "animations": {
+        "idle": {
+          "cells":[[4,0],[4,0],[4,0],[0,0],[4,5]],
+          "speed": 800
+        },
+        "walk": {
+          "row": 0,
+          "frames": [5,6,7],
+          "speed": 100
+        },
+        "run": {
+          "row": 1,
+          "frames": [5, 6],
+          "speed": 50
+        },
+        "jump": {
+          "row": 0,
+          "frames": [3],
+          "speed": 200
+        },
+        "fall": {
+          "row": 0,
+          "frames": [2],
+          "speed": 200
+        }
+      }
+    },
+    "cape": {
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "scale": 0.48,
+      "animations": {
+        "idle": {
+          "row": 6,
+          "frames": [1],
+          "speed": 400
+        },
+        "walk": {
+          "row": 6,
+          "frames": [0,2],
+          "speed": 120
+        },
+        "run": {
+          "row": 6,
+          "frames": [2,3,4],
+          "speed": 90
+        },
+        "jump": {
+          "cells": [[9, 2],[10, 2],[11, 2]],
+          "speed": 200
+        },
+        "fall": {
+          "cells": [[6, 6]],
+          "speed": 200
+        }
+      }
+    }
+  }
 }
